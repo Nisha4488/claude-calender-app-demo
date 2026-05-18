@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendar</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="app">
+
+    <header id="calendar-header">
+      <div id="header-nav">
+        <button id="btn-prev" aria-label="Previous month">&#8249;</button>
+        <h1 id="month-year-label">Month Year</h1>
+        <button id="btn-next" aria-label="Next month">&#8250;</button>
+      </div>
+      <button id="btn-today">Today</button>
+    </header>
+
+    <div id="weekday-labels">
+      <span>Sun</span>
+      <span>Mon</span>
+      <span>Tue</span>
+      <span>Wed</span>
+      <span>Thu</span>
+      <span>Fri</span>
+      <span>Sat</span>
+    </div>
+
+    <div id="calendar-grid"></div>
+
+  </div>
+
+  <div id="modal-overlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div id="modal">
+      <div id="modal-header">
+        <h2 id="modal-title">Add Event</h2>
+        <button id="btn-close-modal" aria-label="Close modal">&times;</button>
+      </div>
+
+      <form id="event-form" novalidate>
+        <input type="hidden" id="field-event-id" />
+
+        <label for="field-title">Title <span class="required-mark" aria-hidden="true">*</span></label>
+        <input type="text" id="field-title" placeholder="Event title" autocomplete="off" />
+        <span class="field-error" id="error-title"></span>
+
+        <label for="field-date">Date <span class="required-mark" aria-hidden="true">*</span></label>
+        <input type="date" id="field-date" />
+        <span class="field-error" id="error-date"></span>
+
+        <div id="time-row">
+          <div class="time-field">
+            <label for="field-start">Start time</label>
+            <input type="time" id="field-start" />
+          </div>
+          <div class="time-field">
+            <label for="field-end">End time</label>
+            <input type="time" id="field-end" />
+          </div>
+        </div>
+        <span class="field-error" id="error-time"></span>
+
+        <label for="field-description">Notes</label>
+        <textarea id="field-description" rows="3" placeholder="Optional notes"></textarea>
+
+        <div id="form-actions">
+          <button type="button" id="btn-delete" class="hidden">Delete event</button>
+          <button type="submit" id="btn-save">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
