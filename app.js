@@ -26,9 +26,10 @@ function generateId() {
 // ── C: Calendar Rendering ─────────────────────────────────────────────────────
 
 function updateHeader() {
-  const label = new Date(currentYear, currentMonth, 1)
-    .toLocaleString('default', { month: 'long', year: 'numeric' });
-  document.getElementById('month-year-label').textContent = label;
+  const d = new Date(currentYear, currentMonth, 1);
+  const month = d.toLocaleString('default', { month: 'long' });
+  document.getElementById('month-year-label').innerHTML =
+    `<strong>${month}</strong> ${currentYear}`;
 }
 
 function getEventsForDate(dateStr) {
@@ -52,14 +53,33 @@ function buildDayCell(dateStr, dayNumber, isToday, isCurrentMonth) {
   const eventList = document.createElement('div');
   eventList.className = 'event-list';
 
-  getEventsForDate(dateStr).forEach(evt => {
-    const chip = document.createElement('span');
+  const dayEvents = getEventsForDate(dateStr);
+  const maxVisible = 3;
+  dayEvents.slice(0, maxVisible).forEach(evt => {
+    const chip = document.createElement('div');
     chip.className = 'event-chip';
     chip.dataset.id = evt.id;
-    chip.textContent = evt.startTime ? `${evt.startTime} ${evt.title}` : evt.title;
+    chip.style.backgroundColor = evt.color || '#007aff';
     chip.title = evt.title;
+
+    const dot = document.createElement('span');
+    dot.className = 'event-dot';
+
+    const label = document.createElement('span');
+    label.className = 'event-label';
+    label.textContent = evt.startTime ? `${evt.startTime} ${evt.title}` : evt.title;
+
+    chip.appendChild(dot);
+    chip.appendChild(label);
     eventList.appendChild(chip);
   });
+
+  if (dayEvents.length > maxVisible) {
+    const more = document.createElement('span');
+    more.className = 'event-more';
+    more.textContent = `+${dayEvents.length - maxVisible} more`;
+    eventList.appendChild(more);
+  }
 
   cell.appendChild(eventList);
 
@@ -156,6 +176,17 @@ function goToToday() {
 
 // ── E: Modal & CRUD ───────────────────────────────────────────────────────────
 
+function setSelectedColor(color) {
+  document.getElementById('field-color').value = color;
+  document.querySelectorAll('.color-option').forEach(btn => {
+    if (btn.dataset.color === color) {
+      btn.style.boxShadow = `0 0 0 2px #fff, 0 0 0 4px ${color}`;
+    } else {
+      btn.style.boxShadow = 'none';
+    }
+  });
+}
+
 function openModal(dateStr, eventId) {
   editingId = eventId || null;
 
@@ -173,12 +204,14 @@ function openModal(dateStr, eventId) {
       document.getElementById('field-start').value = evt.startTime || '';
       document.getElementById('field-end').value = evt.endTime || '';
       document.getElementById('field-description').value = evt.description || '';
+      setSelectedColor(evt.color || '#34c759');
     }
     document.getElementById('btn-delete').classList.remove('hidden');
   } else {
     document.getElementById('event-form').reset();
     document.getElementById('field-date').value = dateStr;
     document.getElementById('btn-delete').classList.add('hidden');
+    setSelectedColor('#34c759');
   }
 
   document.getElementById('modal-overlay').classList.remove('hidden');
@@ -223,6 +256,7 @@ function handleFormSubmit(e) {
   const startTime = document.getElementById('field-start').value;
   const endTime = document.getElementById('field-end').value;
   const description = document.getElementById('field-description').value.trim();
+  const color = document.getElementById('field-color').value || '#34c759';
 
   // Soft warning: end before start
   if (startTime && endTime && endTime < startTime) {
@@ -234,10 +268,10 @@ function handleFormSubmit(e) {
   if (editingId) {
     const idx = events.findIndex(e => e.id === editingId);
     if (idx !== -1) {
-      events[idx] = { ...events[idx], title, date, startTime, endTime, description };
+      events[idx] = { ...events[idx], title, date, startTime, endTime, description, color };
     }
   } else {
-    events.push({ id: generateId(), title, date, startTime, endTime, description });
+    events.push({ id: generateId(), title, date, startTime, endTime, description, color });
   }
 
   saveEvents(events);
@@ -277,6 +311,11 @@ function init() {
   // Form submit & delete
   document.getElementById('event-form').addEventListener('submit', handleFormSubmit);
   document.getElementById('btn-delete').addEventListener('click', () => deleteEvent(editingId));
+
+  // Color picker
+  document.querySelectorAll('.color-option').forEach(btn => {
+    btn.addEventListener('click', () => setSelectedColor(btn.dataset.color));
+  });
 
   // Validation: clear errors on input
   document.getElementById('field-title').addEventListener('input', () => {

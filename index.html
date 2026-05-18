@@ -11,12 +11,12 @@
   <div id="app">
 
     <header id="calendar-header">
+      <h1 id="month-year-label">Month Year</h1>
       <div id="header-nav">
         <button id="btn-prev" aria-label="Previous month">&#8249;</button>
-        <h1 id="month-year-label">Month Year</h1>
+        <button id="btn-today">Today</button>
         <button id="btn-next" aria-label="Next month">&#8250;</button>
       </div>
-      <button id="btn-today">Today</button>
     </header>
 
     <div id="weekday-labels">
@@ -65,6 +65,17 @@
 
         <label for="field-description">Notes</label>
         <textarea id="field-description" rows="3" placeholder="Optional notes"></textarea>
+
+        <label>Color</label>
+        <div id="color-picker">
+          <button type="button" class="color-option" data-color="#34c759" style="background:#34c759" aria-label="Green"></button>
+          <button type="button" class="color-option" data-color="#007aff" style="background:#007aff" aria-label="Blue"></button>
+          <button type="button" class="color-option" data-color="#af52de" style="background:#af52de" aria-label="Purple"></button>
+          <button type="button" class="color-option" data-color="#ff9500" style="background:#ff9500" aria-label="Orange"></button>
+          <button type="button" class="color-option" data-color="#ff3b30" style="background:#ff3b30" aria-label="Red"></button>
+          <button type="button" class="color-option" data-color="#5ac8fa" style="background:#5ac8fa" aria-label="Teal"></button>
+          <input type="hidden" id="field-color" value="#34c759" />
+        </div>
 
         <div id="form-actions">
           <button type="button" id="btn-delete" class="hidden">Delete event</button>

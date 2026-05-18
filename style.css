@@ -1,139 +1,129 @@
-/* ── CSS Custom Properties ── */
+/* ── Custom Properties ── */
 :root {
-  --color-primary:      #3b82f6;
-  --color-primary-light:#dbeafe;
-  --color-danger:       #ef4444;
-  --color-danger-light: #fee2e2;
-  --color-text:         #1f2937;
-  --color-muted:        #9ca3af;
-  --color-border:       #e5e7eb;
-  --color-bg:           #f9fafb;
-  --color-white:        #ffffff;
-  --color-chip-bg:      #dbeafe;
-  --color-chip-text:    #1e40af;
-  --color-today-bg:     #eff6ff;
-  --color-today-border: #3b82f6;
-  --radius:             6px;
+  --red:           #ff3b30;
+  --blue:          #007aff;
+  --green:         #34c759;
+  --purple:        #af52de;
+  --orange:        #ff9500;
+  --teal:          #5ac8fa;
+  --color-text:    #1c1c1e;
+  --color-muted:   #8e8e93;
+  --color-border:  #d1d1d6;
+  --color-bg:      #ffffff;
+  --color-other:   #f2f2f7;
 }
 
-/* ── Reset & Base ── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  font-size: 13px;
   color: var(--color-text);
   background: var(--color-bg);
-  min-height: 100vh;
 }
 
-button {
-  cursor: pointer;
-  font-family: inherit;
-  font-size: inherit;
-  border: none;
-  background: none;
-}
+button { cursor: pointer; font-family: inherit; font-size: inherit; border: none; background: none; }
+input, textarea { font-family: inherit; font-size: inherit; }
+.hidden { display: none !important; }
 
-input, textarea, select {
-  font-family: inherit;
-  font-size: inherit;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* ── App Shell ── */
+/* ── App Shell — full viewport height, flex column ── */
 #app {
-  max-width: 960px;
+  height: 100vh;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 0 20px 16px;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ── Calendar Header ── */
+/* ── Header ── */
 #calendar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
-  gap: 8px;
+  padding: 14px 0 10px;
+  flex-shrink: 0;
+}
+
+#month-year-label {
+  font-size: 2rem;
+  font-weight: 300;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+#month-year-label strong {
+  font-weight: 700;
 }
 
 #header-nav {
   display: flex;
   align-items: center;
-  gap: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-#month-year-label {
-  font-size: 1.25rem;
-  font-weight: 600;
-  min-width: 180px;
-  text-align: center;
+#btn-prev,
+#btn-today,
+#btn-next {
+  height: 30px;
+  padding: 0 10px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s;
 }
 
 #btn-prev,
 #btn-next {
-  font-size: 1.5rem;
-  line-height: 1;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  color: var(--color-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s;
-}
-
-#btn-prev:hover,
-#btn-next:hover {
-  background: var(--color-border);
+  font-size: 1.25rem;
+  padding: 0 8px;
 }
 
 #btn-today {
-  padding: 6px 14px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-white);
-  color: var(--color-text);
-  font-weight: 500;
-  transition: background 0.15s;
+  font-size: 13px;
+  border-left: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
 }
 
-#btn-today:hover {
-  background: var(--color-border);
-}
+#btn-prev:hover,
+#btn-today:hover,
+#btn-next:hover { background: var(--color-other); }
 
 /* ── Weekday Labels ── */
 #weekday-labels {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 2px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
 }
 
 #weekday-labels span {
   text-align: center;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 500;
   color: var(--color-muted);
-  padding: 4px 0;
+  padding: 6px 0;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
-/* ── Calendar Grid ── */
+/* ── Calendar Grid — fills remaining height ── */
 #calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-auto-rows: minmax(90px, auto);
-  border-top: 1px solid var(--color-border);
+  grid-template-rows: repeat(6, 1fr);
+  flex: 1;
   border-left: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border);
+  min-height: 0;
 }
 
 /* ── Day Cell ── */
@@ -141,54 +131,40 @@ input, textarea, select {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   border-right: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
-  padding: 6px;
-  background: var(--color-white);
-  min-height: 90px;
-  cursor: default;
+  padding: 4px 6px 20px;
+  background: var(--color-bg);
+  overflow: hidden;
   transition: background 0.1s;
 }
 
-.day-cell:hover {
-  background: #f0f4ff;
-}
+.day-cell.other-month { background: var(--color-other); }
 
-.day-cell.other-month {
-  background: var(--color-bg);
-}
-
-.day-cell.today {
-  background: var(--color-today-bg);
-  border-right-color: var(--color-today-border);
-  border-bottom-color: var(--color-today-border);
-}
-
+/* ── Day Number — top right ── */
 .day-number {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  font-size: 13px;
-  font-weight: 500;
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+  font-weight: 400;
   border-radius: 50%;
+  align-self: flex-end;
+  margin-bottom: 3px;
   flex-shrink: 0;
-  margin-bottom: 2px;
 }
 
-.day-cell.other-month .day-number {
-  color: var(--color-muted);
-}
+.day-cell.other-month .day-number { color: var(--color-muted); }
 
 .day-cell.today .day-number {
-  background: var(--color-primary);
-  color: var(--color-white);
+  background: var(--red);
+  color: #fff;
   font-weight: 700;
 }
 
-/* ── Event Chips ── */
+/* ── Event List ── */
 .event-list {
   display: flex;
   flex-direction: column;
@@ -197,55 +173,75 @@ input, textarea, select {
   overflow: hidden;
 }
 
+/* ── Event Chip — full-width colored bar ── */
 .event-chip {
-  display: block;
-  background: var(--color-chip-bg);
-  color: var(--color-chip-text);
-  font-size: 11px;
-  font-weight: 500;
-  padding: 2px 6px;
-  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 5px;
+  border-radius: 4px;
   cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
+  width: 100%;
+  min-width: 0;
   transition: filter 0.1s;
 }
 
-.event-chip:hover {
-  filter: brightness(0.92);
+.event-chip:hover { filter: brightness(0.88); }
+
+.event-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.8);
+  flex-shrink: 0;
 }
 
-/* ── Add Event Button (+ on cell hover) ── */
+.event-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* ── Overflow indicator ── */
+.event-more {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-muted);
+  padding: 1px 4px;
+  cursor: pointer;
+}
+
+.event-more:hover { color: var(--color-text); }
+
+/* ── Add Button ── */
 .btn-add-event {
   position: absolute;
-  bottom: 4px;
-  right: 4px;
-  width: 20px;
-  height: 20px;
+  bottom: 3px;
+  right: 5px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: var(--color-primary);
-  color: var(--color-white);
-  font-size: 16px;
-  line-height: 1;
+  background: var(--blue);
+  color: #fff;
+  font-size: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   transition: opacity 0.15s;
-  padding: 0;
 }
 
-.day-cell:hover .btn-add-event {
-  opacity: 1;
-}
+.day-cell:hover .btn-add-event { opacity: 1; }
 
 /* ── Modal Overlay ── */
 #modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0,0,0,0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -254,13 +250,13 @@ input, textarea, select {
 }
 
 #modal {
-  background: var(--color-white);
-  border-radius: 10px;
+  background: #fff;
+  border-radius: 12px;
   padding: 24px;
   width: min(480px, 100%);
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
 }
 
 #modal-header {
@@ -270,17 +266,14 @@ input, textarea, select {
   margin-bottom: 20px;
 }
 
-#modal-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
+#modal-title { font-size: 1.05rem; font-weight: 600; }
 
 #btn-close-modal {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   line-height: 1;
   color: var(--color-muted);
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -288,32 +281,21 @@ input, textarea, select {
   transition: background 0.15s;
 }
 
-#btn-close-modal:hover {
-  background: var(--color-border);
-  color: var(--color-text);
-}
+#btn-close-modal:hover { background: var(--color-border); color: var(--color-text); }
 
-/* ── Event Form ── */
-#event-form {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
+/* ── Form ── */
+#event-form { display: flex; flex-direction: column; gap: 4px; }
 
 #event-form label {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-text);
-  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-muted);
+  margin-top: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-#event-form label:first-of-type {
-  margin-top: 0;
-}
-
-.required-mark {
-  color: var(--color-danger);
-}
+.required-mark { color: var(--red); }
 
 #event-form input[type="text"],
 #event-form input[type="date"],
@@ -322,131 +304,97 @@ input, textarea, select {
   width: 100%;
   padding: 8px 10px;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-white);
+  border-radius: 8px;
   color: var(--color-text);
   outline: none;
+  font-size: 13px;
   transition: border-color 0.15s;
 }
 
 #event-form input:focus,
-#event-form textarea:focus {
-  border-color: var(--color-primary);
-}
+#event-form textarea:focus { border-color: var(--blue); }
 
-#event-form textarea {
-  resize: vertical;
-  min-height: 72px;
-}
+#event-form textarea { resize: vertical; min-height: 72px; }
 
-#time-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
+#time-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-.time-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.time-field label {
-  margin-top: 0;
-}
+.time-field { display: flex; flex-direction: column; gap: 4px; }
+.time-field label { margin-top: 0; }
 
 .field-error {
-  font-size: 12px;
-  color: var(--color-danger);
-  min-height: 16px;
+  font-size: 11px;
+  color: var(--red);
+  min-height: 14px;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
+/* ── Color Picker ── */
+#color-picker {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.color-option {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s;
+  outline: none;
+}
+
+.color-option:hover { transform: scale(1.2); }
+
+/* ── Form Actions ── */
 #form-actions {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
 #btn-delete {
   margin-right: auto;
   padding: 8px 14px;
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius);
-  color: var(--color-danger);
+  border: 1px solid var(--red);
+  border-radius: 8px;
+  color: var(--red);
   font-weight: 500;
-  background: var(--color-white);
+  background: #fff;
   transition: background 0.15s;
 }
 
-#btn-delete:hover {
-  background: var(--color-danger-light);
-}
+#btn-delete:hover { background: #fff1f0; }
 
 #btn-save {
   padding: 8px 20px;
-  background: var(--color-primary);
-  color: var(--color-white);
-  border-radius: var(--radius);
+  background: var(--blue);
+  color: #fff;
+  border-radius: 8px;
   font-weight: 600;
   transition: filter 0.15s;
 }
 
-#btn-save:hover {
-  filter: brightness(0.9);
-}
+#btn-save:hover { filter: brightness(0.9); }
 
-/* ── Responsive: 640px — compress cells ── */
+/* ── Responsive ── */
 @media (max-width: 640px) {
-  #app {
-    padding: 8px;
-  }
-
-  #month-year-label {
-    font-size: 1rem;
-    min-width: 140px;
-  }
-
-  #calendar-grid {
-    grid-auto-rows: minmax(56px, auto);
-  }
-
-  .day-cell {
-    min-height: 56px;
-    padding: 2px 4px;
-  }
-
-  .day-number {
-    font-size: 11px;
-    width: 20px;
-    height: 20px;
-  }
-
-  .event-chip {
-    font-size: 10px;
-    padding: 1px 4px;
-  }
-
-  .btn-add-event {
-    width: 16px;
-    height: 16px;
-    font-size: 13px;
-  }
-
-  #weekday-labels span {
-    font-size: 10px;
-  }
+  #app { padding: 0 8px 8px; }
+  #month-year-label { font-size: 1.4rem; }
+  .day-number { font-size: 11px; width: 18px; height: 18px; }
+  .event-chip { padding: 1px 3px; }
+  .event-label { font-size: 10px; }
+  #weekday-labels span { font-size: 9px; letter-spacing: 0; }
 }
 
-/* ── Responsive: 380px — chips become dots ── */
 @media (max-width: 380px) {
-  .event-chip {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    padding: 0;
-    font-size: 0;
-    overflow: hidden;
-  }
+  .event-label { display: none; }
+  .event-dot { width: 8px; height: 8px; }
+  .event-chip { width: 10px; height: 10px; border-radius: 50%; padding: 0; }
 }
