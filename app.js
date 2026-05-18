@@ -4,6 +4,7 @@ let currentYear;
 let currentMonth; // 0-indexed
 let events = [];
 let editingId = null;
+let lastFocused = null; // D1: restore focus after modal closes
 
 // ── B: Storage ────────────────────────────────────────────────────────────────
 
@@ -41,13 +42,23 @@ function padDate(year, month, day) {
 }
 
 function buildDayCell(dateStr, dayNumber, isToday, isCurrentMonth) {
+  // C3: human-readable date label for screen readers
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dateLabel = new Date(y, m - 1, d).toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+
   const cell = document.createElement('div');
   cell.className = 'day-cell' + (isToday ? ' today' : '') + (isCurrentMonth ? '' : ' other-month');
   cell.dataset.date = dateStr;
+  cell.setAttribute('role', 'gridcell');
+  cell.setAttribute('aria-label', dateLabel);
+  if (isToday) cell.setAttribute('aria-current', 'date');
 
   const numSpan = document.createElement('span');
   numSpan.className = 'day-number';
   numSpan.textContent = dayNumber;
+  numSpan.setAttribute('aria-hidden', 'true'); // date already announced via cell aria-label
   cell.appendChild(numSpan);
 
   const eventList = document.createElement('div');
@@ -56,14 +67,16 @@ function buildDayCell(dateStr, dayNumber, isToday, isCurrentMonth) {
   const dayEvents = getEventsForDate(dateStr);
   const maxVisible = 3;
   dayEvents.slice(0, maxVisible).forEach(evt => {
-    const chip = document.createElement('div');
+    // A1: button so chips are keyboard-reachable
+    const chip = document.createElement('button');
+    chip.type = 'button';
     chip.className = 'event-chip';
     chip.dataset.id = evt.id;
     chip.style.backgroundColor = evt.color || '#007aff';
-    chip.title = evt.title;
 
     const dot = document.createElement('span');
     dot.className = 'event-dot';
+    dot.setAttribute('aria-hidden', 'true');
 
     const label = document.createElement('span');
     label.className = 'event-label';
@@ -75,7 +88,9 @@ function buildDayCell(dateStr, dayNumber, isToday, isCurrentMonth) {
   });
 
   if (dayEvents.length > maxVisible) {
-    const more = document.createElement('span');
+    // A2: button so "+N more" is keyboard-reachable
+    const more = document.createElement('button');
+    more.type = 'button';
     more.className = 'event-more';
     more.textContent = `+${dayEvents.length - maxVisible} more`;
     eventList.appendChild(more);
@@ -87,7 +102,7 @@ function buildDayCell(dateStr, dayNumber, isToday, isCurrentMonth) {
   addBtn.className = 'btn-add-event';
   addBtn.type = 'button';
   addBtn.dataset.date = dateStr;
-  addBtn.setAttribute('aria-label', 'Add event');
+  addBtn.setAttribute('aria-label', `Add event on ${dateLabel}`); // A3: date in label
   addBtn.textContent = '+';
   cell.appendChild(addBtn);
 
@@ -109,34 +124,40 @@ function buildCalendarGrid() {
 
   const fragment = document.createDocumentFragment();
 
-  // 42 cells: 6 rows × 7 cols
-  for (let i = 0; i < 42; i++) {
-    let dateStr, dayNumber, isCurrentMonth;
+  // 42 cells: 6 rows × 7 cols; each row wrapped for grid semantics
+  for (let row = 0; row < 6; row++) {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'calendar-row';
+    rowEl.setAttribute('role', 'row');
 
-    if (i < firstDay) {
-      // Previous month padding
-      const day = prevMonthDays - firstDay + i + 1;
-      const d = new Date(currentYear, currentMonth - 1, day);
-      dateStr = padDate(d.getFullYear(), d.getMonth(), day);
-      dayNumber = day;
-      isCurrentMonth = false;
-    } else if (i < firstDay + daysInMonth) {
-      // Current month
-      const day = i - firstDay + 1;
-      dateStr = padDate(currentYear, currentMonth, day);
-      dayNumber = day;
-      isCurrentMonth = true;
-    } else {
-      // Next month padding
-      const day = i - firstDay - daysInMonth + 1;
-      const d = new Date(currentYear, currentMonth + 1, day);
-      dateStr = padDate(d.getFullYear(), d.getMonth(), day);
-      dayNumber = day;
-      isCurrentMonth = false;
+    for (let col = 0; col < 7; col++) {
+      const i = row * 7 + col;
+      let dateStr, dayNumber, isCurrentMonth;
+
+      if (i < firstDay) {
+        const day = prevMonthDays - firstDay + i + 1;
+        const d = new Date(currentYear, currentMonth - 1, day);
+        dateStr = padDate(d.getFullYear(), d.getMonth(), day);
+        dayNumber = day;
+        isCurrentMonth = false;
+      } else if (i < firstDay + daysInMonth) {
+        const day = i - firstDay + 1;
+        dateStr = padDate(currentYear, currentMonth, day);
+        dayNumber = day;
+        isCurrentMonth = true;
+      } else {
+        const day = i - firstDay - daysInMonth + 1;
+        const d = new Date(currentYear, currentMonth + 1, day);
+        dateStr = padDate(d.getFullYear(), d.getMonth(), day);
+        dayNumber = day;
+        isCurrentMonth = false;
+      }
+
+      const isToday = dateStr === todayStr;
+      rowEl.appendChild(buildDayCell(dateStr, dayNumber, isToday, isCurrentMonth));
     }
 
-    const isToday = dateStr === todayStr;
-    fragment.appendChild(buildDayCell(dateStr, dayNumber, isToday, isCurrentMonth));
+    fragment.appendChild(rowEl);
   }
 
   grid.appendChild(fragment);
@@ -187,7 +208,25 @@ function setSelectedColor(color) {
   });
 }
 
+// D2: cycle Tab/Shift+Tab within the open modal
+function trapFocus(e) {
+  if (e.key !== 'Tab') return;
+  const modal = document.getElementById('modal');
+  const focusable = [...modal.querySelectorAll(
+    'button:not([disabled]), input, textarea, [tabindex="0"]'
+  )].filter(el => !el.closest('.hidden'));
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (e.shiftKey) {
+    if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+  } else {
+    if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+}
+
 function openModal(dateStr, eventId) {
+  lastFocused = document.activeElement; // D1: remember trigger
   editingId = eventId || null;
 
   document.getElementById('modal-title').textContent = editingId ? 'Edit Event' : 'Add Event';
@@ -216,9 +255,11 @@ function openModal(dateStr, eventId) {
 
   document.getElementById('modal-overlay').classList.remove('hidden');
   document.getElementById('field-title').focus();
+  document.addEventListener('keydown', trapFocus); // D2: activate trap
 }
 
 function closeModal() {
+  document.removeEventListener('keydown', trapFocus); // D2: deactivate trap
   document.getElementById('modal-overlay').classList.add('hidden');
   document.getElementById('event-form').reset();
   document.getElementById('error-title').textContent = '';
@@ -226,6 +267,7 @@ function closeModal() {
   document.getElementById('error-time').textContent = '';
   document.getElementById('btn-delete').classList.add('hidden');
   editingId = null;
+  if (lastFocused) { lastFocused.focus(); lastFocused = null; } // D1: restore
 }
 
 function validateForm() {

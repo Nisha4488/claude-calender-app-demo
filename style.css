@@ -7,7 +7,7 @@
   --orange:        #ff9500;
   --teal:          #5ac8fa;
   --color-text:    #1c1c1e;
-  --color-muted:   #8e8e93;
+  --color-muted:   #6e6e73;
   --color-border:  #d1d1d6;
   --color-bg:      #ffffff;
   --color-other:   #f2f2f7;
@@ -126,6 +126,9 @@ input, textarea { font-family: inherit; font-size: inherit; }
   min-height: 0;
 }
 
+/* Row wrappers — semantic only, layout provided by parent grid */
+.calendar-row { display: contents; }
+
 /* ── Day Cell ── */
 .day-cell {
   position: relative;
@@ -235,7 +238,8 @@ input, textarea { font-family: inherit; font-size: inherit; }
   transition: opacity 0.15s;
 }
 
-.day-cell:hover .btn-add-event { opacity: 1; }
+.day-cell:hover .btn-add-event,
+.btn-add-event:focus-visible { opacity: 1; }
 
 /* ── Modal Overlay ── */
 #modal-overlay {
@@ -306,13 +310,16 @@ input, textarea { font-family: inherit; font-size: inherit; }
   border: 1px solid var(--color-border);
   border-radius: 8px;
   color: var(--color-text);
-  outline: none;
   font-size: 13px;
   transition: border-color 0.15s;
 }
 
-#event-form input:focus,
-#event-form textarea:focus { border-color: var(--blue); }
+#event-form input:focus-visible,
+#event-form textarea:focus-visible {
+  border-color: var(--blue);
+  outline: 2px solid rgba(0, 122, 255, 0.3);
+  outline-offset: 0;
+}
 
 #event-form textarea { resize: vertical; min-height: 72px; }
 
@@ -345,10 +352,14 @@ input, textarea { font-family: inherit; font-size: inherit; }
   cursor: pointer;
   padding: 0;
   transition: transform 0.1s;
-  outline: none;
 }
 
 .color-option:hover { transform: scale(1.2); }
+
+.color-option:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
 
 /* ── Form Actions ── */
 #form-actions {

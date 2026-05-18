@@ -11,7 +11,7 @@
   <div id="app">
 
     <header id="calendar-header">
-      <h1 id="month-year-label">Month Year</h1>
+      <h1 id="month-year-label" aria-live="polite" aria-atomic="true">Month Year</h1>
       <div id="header-nav">
         <button id="btn-prev" aria-label="Previous month">&#8249;</button>
         <button id="btn-today">Today</button>
@@ -19,17 +19,17 @@
       </div>
     </header>
 
-    <div id="weekday-labels">
-      <span>Sun</span>
-      <span>Mon</span>
-      <span>Tue</span>
-      <span>Wed</span>
-      <span>Thu</span>
-      <span>Fri</span>
-      <span>Sat</span>
+    <div id="weekday-labels" role="row">
+      <span role="columnheader" aria-label="Sunday">Sun</span>
+      <span role="columnheader" aria-label="Monday">Mon</span>
+      <span role="columnheader" aria-label="Tuesday">Tue</span>
+      <span role="columnheader" aria-label="Wednesday">Wed</span>
+      <span role="columnheader" aria-label="Thursday">Thu</span>
+      <span role="columnheader" aria-label="Friday">Fri</span>
+      <span role="columnheader" aria-label="Saturday">Sat</span>
     </div>
 
-    <div id="calendar-grid"></div>
+    <div id="calendar-grid" role="grid" aria-label="Calendar" aria-labelledby="month-year-label"></div>
 
   </div>
 
@@ -44,12 +44,12 @@
         <input type="hidden" id="field-event-id" />
 
         <label for="field-title">Title <span class="required-mark" aria-hidden="true">*</span></label>
-        <input type="text" id="field-title" placeholder="Event title" autocomplete="off" />
-        <span class="field-error" id="error-title"></span>
+        <input type="text" id="field-title" placeholder="Event title" autocomplete="off" required aria-required="true" aria-describedby="error-title" />
+        <span class="field-error" id="error-title" role="alert"></span>
 
         <label for="field-date">Date <span class="required-mark" aria-hidden="true">*</span></label>
-        <input type="date" id="field-date" />
-        <span class="field-error" id="error-date"></span>
+        <input type="date" id="field-date" required aria-required="true" aria-describedby="error-date" />
+        <span class="field-error" id="error-date" role="alert"></span>
 
         <div id="time-row">
           <div class="time-field">
@@ -61,13 +61,13 @@
             <input type="time" id="field-end" />
           </div>
         </div>
-        <span class="field-error" id="error-time"></span>
+        <span class="field-error" id="error-time" role="alert"></span>
 
         <label for="field-description">Notes</label>
         <textarea id="field-description" rows="3" placeholder="Optional notes"></textarea>
 
-        <label>Color</label>
-        <div id="color-picker">
+        <label id="color-label">Color</label>
+        <div id="color-picker" role="group" aria-labelledby="color-label">
           <button type="button" class="color-option" data-color="#34c759" style="background:#34c759" aria-label="Green"></button>
           <button type="button" class="color-option" data-color="#007aff" style="background:#007aff" aria-label="Blue"></button>
           <button type="button" class="color-option" data-color="#af52de" style="background:#af52de" aria-label="Purple"></button>

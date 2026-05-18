@@ -114,6 +114,36 @@
 
 ---
 
+### Step 9 — Accessibility (a11y) audit & fixes
+
+#### A. Keyboard access — Critical
+- [x] A1: Convert event chips from `<div>` to `<button>` in `buildDayCell()` so they are focusable and activatable via keyboard
+- [x] A2: Convert `.event-more` span to `<button>` so "+N more" is keyboard reachable
+- [x] A3: Make `.btn-add-event` visible to keyboard users — show it on `:focus-visible` in addition to `:hover`
+
+#### B. Focus indicators — Critical
+- [x] B1: Remove `outline: none` from `.color-option` in `style.css`; add `:focus-visible` ring (`outline: 2px solid var(--blue); outline-offset: 2px`)
+- [x] B2: Remove `outline: none` from form inputs; added `outline` via `:focus-visible` instead of suppressing it entirely
+
+#### C. ARIA & semantics — High
+- [x] C1: Added `role="grid"` and `aria-labelledby="month-year-label"` to `#calendar-grid`; row wrappers (`div.calendar-row[role="row"]` with `display:contents`) added in JS
+- [x] C2: Added `role="row"` to `#weekday-labels` and `role="columnheader"` + full `aria-label` to each `<span>`
+- [x] C3: In `buildDayCell()`, added `role="gridcell"`, `aria-label` (full date string), `aria-current="date"` on today; day number marked `aria-hidden`
+- [x] C4: Added `aria-live="polite" aria-atomic="true"` to `#month-year-label`
+- [x] C5: Added `role="alert"` to `#error-title`, `#error-date`, `#error-time`
+- [x] C6: Added `aria-describedby="error-title"` to `#field-title` and `aria-describedby="error-date"` to `#field-date`
+- [x] C7: Added `required` and `aria-required="true"` to `#field-title` and `#field-date`
+- [x] C8: Added `id="color-label"` to Color label; `#color-picker` gets `role="group" aria-labelledby="color-label"`
+
+#### D. Focus management — High
+- [x] D1: `lastFocused = document.activeElement` saved on `openModal()`; restored in `closeModal()`
+- [x] D2: `trapFocus()` function added; attached on modal open, removed on modal close; cycles Tab/Shift+Tab within modal focusable elements
+
+#### E. Color contrast — Medium
+- [x] E1: Changed `--color-muted` from `#8e8e93` (~3.5:1) to `#6e6e73` (~4.6:1 on white) — passes WCAG AA for all text sizes
+
+---
+
 ## Acceptance Criteria Summary
 
 | # | Criterion | Tested? |
@@ -128,6 +158,11 @@
 | AC-8 | Layout is readable at 375px viewport width | ✅ |
 | AC-9 | Event chips truncate cleanly; `+` button visible on hover | ✅ |
 | AC-10 | Error messages clear when user corrects the field | ✅ |
+| AC-11 | All interactive elements reachable and operable by keyboard alone | ✅ |
+| AC-12 | All interactive elements have a visible focus indicator | ✅ |
+| AC-13 | Screen reader announces month changes and form errors | ✅ |
+| AC-14 | Modal traps focus and restores it on close | ✅ |
+| AC-15 | Text contrast meets WCAG AA (4.5:1 for normal, 3:1 for large) | ✅ |
 
 ---
 
